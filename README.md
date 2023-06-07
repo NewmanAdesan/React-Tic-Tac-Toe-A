@@ -36,7 +36,8 @@ Experience the classic game of TicTacToe on the web with an added twist of game 
 
 # Project Description
 ## The GameManager Component
-### What it returns
+### WHAT IT RETURNS
+<img src="./ReadMe-Images/tic-tac-toe-GameManager.png" style="width:600px; height:auto" alt="Project Screenshot">
 ```jsx
   <Board
       xIsNext = {xIsNext}
@@ -195,5 +196,158 @@ const moves = history.map( (squares, moves) => {
         );
 } )
 ``` 
+<br /><br />
+
+
+## The Board Component
+### HOW IT IS CALLED
+<img src="./ReadMe-Images/tic-tac-toe-Board-Component.png" style="width:600px; height:auto" alt="Project Screenshot">
+```jsx
+<Board
+    xIsNext = {xIsNext}
+    squares = {currentSquares}
+    onPlay = {handlePlay}
+/>
+```
+
+the "xIsNext" property <br />
+this is how the GameManger Component communicate with the Board Component<br />
+to tell it who is to play next "player O" or "player X".<br /><br />
+
+the "squares" property <br />
+this is how the GameManger Component communicate with the Board Component <br />
+to tell it what the board UI should display.<br /><br />
+
+the "onPlay" property <br />
+this is how the Board Component communicate with the GameManger Component<br />
+to tell it a new move has been made and what the new move is by sending a new board data.<br /><br />
+
+### WHAT IT RETURNS
+```jsx
+<div className="status"> {status} </div>
+```
+the Board Component renders the game-info UI <br />
+this shows who is to play 'O' or 'X' that is what the variable "status" does<br /><br />
+
+the Board Component also renders the Board UI itself.<br />
+the design of the board UI is 3 rows<br />
+with each row having 3 Square Component (3 buttons)<br />
+the Square Component has two properties "value" & "onSquareClick"<br />
+
+the "value" property <br />
+this is how the Board Component communicate with the Square Component<br />
+to tell what value to display.<br /><br />
+
+the "onSquareClick" property <br />
+this is how the Square Component communicate with the Board Component<br />
+to tell that it has been clicked.<br /><br />
+
+
+
+
+### WHAT IT HAS
+```jsx
+function handleClick(i){
+    if (calculateWinner(squares) || squares[i]) {
+        return;
+    }
+
+    const nextSquares = squares.slice();
+    if (xIsNext) nextSquares[i] = 'X';
+    else nextSquares[i] = 'O';
+    onPlay(nextSquares)
+}
+```
+
+```jsx
+if (calculateWinner(squares) || squares[i]) return;
+```
+when a Square Component receives a click event, the "handleClick" is called <br />
+this means a player want to play a move on the board.<br />
+first we check if the play is valid.<br /><br />
+
+a play is valid if the board position of the play is free<br />
+and if there are no winners yet on the board.<br /><br />
+
+the "handleClick" is called with an id of the the Square Component<br />
+it uses this ID to check two things<br />
+if there is a winner on the board already do nothing (calculateWinner(squares)) OR<br />
+if there is a value at that board position do nothing (squares[i])<br /><br />
+
+let's have a look at the "calculateWinner" utility function<br />
+if there is a winner on the board it returns the winner 'X' or 'O'<br />
+if there is no winner, it return null.<br /><br />
+
+```jsx
+function calculateWinner(squares){
+    const lines =[
+        [0,1,2], [3,4,5], [6,7,8], [0,3,6],
+        [1,4,7], [2,5,8], [0,4,8], [2,4,6]
+    ]
+
+    for (let i=0; i<lines.length; i++){
+        const [a,b,c] = lines[i];
+        if (squares[a] && squares[a]===squares[b] && squares[b]===squares[c]) return squares[a];
+    }
+
+    return null;
+}
+```
+
+the calculateWinner function basically models <br />
+how to calculate the winner of a tictactoe game<br />
+checking all straight line span of three boxes<br /><br />
+
+```jsx
+const nextSquares = squares.slice();
+if (xIsNext) nextSquares[i] = 'X';
+else nextSquares[i] = 'O';
+onPlay(nextSquares)
+```
+
+at this point, we know that the move is valid.<br />
+we generate a new board data "nextSquares" showing the current move.<br />
+next we relay this new board data to the App Component via the "onPlay" property<br />
+
+remember that when the App component receives a new board data, <br />
+it updates it state "history" and "currentMove"<br />
+therefore "currentSquares" and "xIsNext" also updates<br />
+therefore the Board Component "squares" property changes<br />
+therefore the Board UI changes.<br /><br />
+
+```jsx
+const winner = calculateWinner(squares);
+let status;
+if (winner) status = 'Winner: ' + winner;
+else status = 'Next Player: ' + (xIsNext?'X':'O');
+```
+
+now that the board UI has been updated <br />
+due to communication from the App Component to the Board Component,<br />
+we need to update the game-info UI<br /><br />
+
+this is done via the "status" variable which is a string that tells<br />
+that tells if there is a winner and if there is not, whose turn is to play 'O' or 'X'<br /><br />
+
+
+## The Square Component
+### HOW IT IS USED
+```jsx
+<Square     
+    value={squares[0]}
+    onSquareClick={...}
+/>
+```
+
+### WHAT IT RETURNS
+```jsx
+return (
+    <button className="square" onClick={onSquareClick} >
+        {value}
+    </button>
+)
+```
+    
+
 
 
